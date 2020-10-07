@@ -76,6 +76,9 @@ abstract class AbstractGitflowBasedRepositoryMojo extends AbstractGitflowBranchM
     
     @Parameter(defaultValue = "${project.build.directory}", required = true)
     private File buildDirectory;
+
+    @Parameter(defaultValue = "false", property = "skipExistingCatalogFileArtifactAttach", required = true)
+    private boolean skipExistingCatalogFileArtifactAttach;
     
     @Component
     private RepositorySystem repositorySystem;
@@ -217,7 +220,10 @@ abstract class AbstractGitflowBasedRepositoryMojo extends AbstractGitflowBranchM
             );
             ArtifactRequest request = new ArtifactRequest(artifact, remoteRepositories, null);
             ArtifactResult catalogResult = repositorySystem.resolveArtifact(tempSession, request);
-            resolvedArtifacts.add(catalogResult);
+
+            if (!skipExistingCatalogFileArtifactAttach) {
+                resolvedArtifacts.add(catalogResult);
+            }
 
             if (catalogResult.isResolved()) {
                 // Read the file line by line...
